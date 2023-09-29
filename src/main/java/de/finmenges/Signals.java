@@ -7,19 +7,16 @@ public class Signals {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true) {
+                do {
                     try {
                         Frame.setSignalColorRed();
                         Thread.sleep(1000);
-                        Frame.setSignalColorStandart();
+                        Frame.setSignalColorStandard();
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    if (run==false) {
-                        break;
-                    }
-                }
+                } while (run);
             }
 
         });

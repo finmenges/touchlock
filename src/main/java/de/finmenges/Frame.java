@@ -3,9 +3,17 @@ package de.finmenges;
 import javax.swing.*;
 import java.awt.*;
 
+import static de.finmenges.Main.preferences;
+
 public class Frame extends JFrame {
     static JButton signal = new JButton();
+    String _standardTextConfigFolderPathInput = "Pfad für Configfolder hier einfügen...";
     public Frame() {
+
+        if (!preferences.get("configPath", "").isEmpty()) {
+            _standardTextConfigFolderPathInput = preferences.get("configPath", "");
+        }
+
         //creating the window
         this.setSize(470, 380);
         this.setLayout(null);
@@ -19,7 +27,7 @@ public class Frame extends JFrame {
         tuschText.setBounds(20,55,70,35);
         this.add(tuschText);
 
-        JTextField pathInput = new JTextField("Pfad für Configfolder hier einfügen...");
+        JTextField pathInput = new JTextField(_standardTextConfigFolderPathInput);
         pathInput.setBounds(10,20,300,25);
         this.add(pathInput);
 
@@ -77,10 +85,12 @@ public class Frame extends JFrame {
         //listeners
         renewPath.addActionListener(a -> {
             pathInput.setEnabled(true);
-            Signals.blinkingButton();
         });
         confirmPathChange.addActionListener(a -> {
-            pathInput.setEnabled(false);
+            if (!pathInput.getText().equals("Pfad für Configfolder hier einfügen...")) {
+                ConfWriter.createConfigFolder(pathInput.getText());
+                pathInput.setEnabled(false);
+            }
         });
         signal.addActionListener(a -> {
             Signals.stopBlinkingButton();
@@ -88,7 +98,7 @@ public class Frame extends JFrame {
         });
 
     }
-
+    //some methods to set color of signal
     public static void setSignalColorGreen(){
         signal.setBackground(Color.GREEN);
     }
@@ -96,7 +106,7 @@ public class Frame extends JFrame {
         signal.setBackground(Color.RED);
         signal.setText("Press");
     }
-    public static void setSignalColorStandart() {
+    public static void setSignalColorStandard() {
         signal.setBackground(Color.darkGray);
     }
 }
