@@ -11,13 +11,13 @@ public class Frame extends JFrame {
     public Frame() {
 
         if (!preferences.get("configPath", "").isEmpty()) {
-            _standardTextConfigFolderPathInput = preferences.get("configPath", "");
+            _standardTextConfigFolderPathInput = preferences.get("configPath", "").replace("TOUCHLOCK-CONFIG", "");
         }
 
         //creating the window
         this.setSize(470, 380);
         this.setLayout(null);
-        this.setTitle("remotelocker");
+        this.setTitle("touchlock");
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -29,6 +29,9 @@ public class Frame extends JFrame {
 
         JTextField pathInput = new JTextField(_standardTextConfigFolderPathInput);
         pathInput.setBounds(10,20,300,25);
+        if (preferences.getBoolean("alreadyConfigured", false)) {
+            pathInput.setEnabled(false);
+        }
         this.add(pathInput);
 
         JButton renewPath = new JButton("R");
@@ -37,6 +40,10 @@ public class Frame extends JFrame {
 
         JButton confirmPathChange = new JButton("Bestätigen");
         confirmPathChange.setBounds(320,20,90,25);
+        if (preferences.getBoolean("alreadyConfigured", false)) {
+            confirmPathChange.setEnabled(false);
+        }
+
         this.add(confirmPathChange);
 
         //radiobuttons for Tuschfernbedienung
@@ -85,11 +92,14 @@ public class Frame extends JFrame {
         //listeners
         renewPath.addActionListener(a -> {
             pathInput.setEnabled(true);
+            confirmPathChange.setEnabled(true);
         });
         confirmPathChange.addActionListener(a -> {
             if (!pathInput.getText().equals("Pfad für Configfolder hier einfügen...")) {
                 ConfWriter.createConfigFolder(pathInput.getText());
+                ConfWriter.createConfigFiles();
                 pathInput.setEnabled(false);
+                confirmPathChange.setEnabled(false);
             }
         });
         signal.addActionListener(a -> {
